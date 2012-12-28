@@ -16,6 +16,13 @@ NFA testCreation();
 NFA testConcatenation();
 
 /**
+ * Creates a nfa from regex "(ab)?" and prints the result.
+ * @returns The resulting nfa.
+ */
+NFA testQuestionTransformation();
+
+
+/**
  * Creates a nfa from regex "acd*" and prints the result.
  * @returns The resulting nfa.
  */
@@ -55,6 +62,22 @@ int main(int argc, char** argv)
 
 	NFA starNFA = testStarTransformation();
 	NFA plusNFA = testPlusTransformation();
+	// TODO SA: question transformation should validate the empty string
+	NFA questionNFA = testQuestionTransformation();
+	
+	// testing composed question transformation
+	// TODO SA: organize better the tests
+	NFA n1 = starTransform(questionNFA);
+
+	n1.printNFA();
+
+	string t1 = "ab";
+	simulateNFA(n1, t1);
+
+	// should fail
+	t1 = "abc";
+	simulateNFA(n1, t1);
+	// end of composed transformation test
 
 	testClosure(starNFA, 4);
 	testClosure(starNFA, 2);
@@ -92,7 +115,7 @@ int main(int argc, char** argv)
 
 	// should fail
 	test = "c";
-	simulateNFA(alternateNFA, test); 
+	simulateNFA(alternateNFA, test);
 
 	return 0;
 }
@@ -149,6 +172,25 @@ NFA testStarTransformation()
 	nfa6.printNFA();
 
 	return nfa6;
+}
+
+/**
+ * Creates a nfa from regex "(ab)?" and prints the result.
+ * @returns The resulting nfa.
+ */
+NFA testQuestionTransformation()
+{
+	NFA nfa1('a');
+	NFA nfa2('b');
+
+	NFA nfa3 = concat(nfa1, nfa2);
+
+	// quiestion transformation test
+	NFA nfa4 = questionTransform(nfa3);
+
+	nfa4.printNFA();
+
+	return nfa4;
 }
 
 /**

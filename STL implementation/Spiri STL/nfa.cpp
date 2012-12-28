@@ -127,6 +127,13 @@ bool NFA::simulate(string input)
 					{
 						newStates.insert(*closureIt);
 					}
+
+			/*		cout << "Closure: ";
+					for (it=newStates.begin(); it!=newStates.end(); ++it)
+					{
+						cout << *it << " ";
+					}
+					cout << "\n"; */
   				}
 			}
 		}
@@ -146,7 +153,7 @@ bool NFA::simulate(string input)
 		}
 
 		cs = newStates;
-	}
+	} 
 
 	// check if we reached a final state
 	for (it=newStates.begin(); it!=newStates.end(); ++it)
@@ -179,11 +186,13 @@ int NFA::epsC(int state, set<int> &closure)
 	for (int i = 1; i <= stateNumber; i++)
 	{
 		int found=map[state][i].find(eps);
-  		if (found!=string::npos)
+
+  		if (found!=string::npos && closure.find(i) == closure.end())
   		{
+  			closure.insert(i);
   			int cl = epsC(i,closure);
   			closure.insert(cl);
-  			closure.insert(i);
+  			
   		}
 	}
 	
@@ -291,6 +300,41 @@ NFA alternate(NFA n1, NFA n2)
 	}
 
  	return na;
+}
+
+/**
+ * Transforms the regex e implemented as finite automata n into
+ * 'e?'
+ */
+NFA questionTransform(NFA n)
+{
+	NFA nq(n.stateNumber + 2);
+	int finalState = n.stateNumber + 2;
+	nq.startState = 1;
+
+ 	nq.finalStates.push_back(finalState);
+
+ 	// connect the start state to the nfa
+ 	nq.map[1][n.startState + 1] = eps;
+ 	// connect the start state to the final state
+ 	nq.map[1][finalState] = eps;
+
+ 	// connect the final states of n to the new final state
+ 	for (int i = 0; i < n.finalStates.size(); i++)
+ 	{
+ 		nq.map[n.finalStates[i] + 1][finalState] = eps;
+ 	}
+
+ 	// copy all the n transitions into ns
+	for (int i = 1; i < n.map.size(); i++)
+	{
+		for (int j = 1; j < n.map.size(); j++)
+		{
+			nq.map[i + 1][j + 1] = n.map[i][j];
+		}
+	} 	
+
+ 	return nq;
 }
 
 /**

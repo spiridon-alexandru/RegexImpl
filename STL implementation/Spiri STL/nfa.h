@@ -66,6 +66,12 @@ NFA concat(NFA n1, NFA n2);
 NFA alternate(NFA n1, NFA n2);
 
 /**
+ * Transforms the regex e implemented as finite automata n into
+ * 'e?'
+ */
+NFA questionTransform(NFA n);
+
+/**
  * Returns the (n)* nfa
  */
 NFA starTransform(NFA n);
