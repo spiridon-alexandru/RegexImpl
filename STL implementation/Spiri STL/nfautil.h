@@ -2,9 +2,8 @@
 #define NFAUTIL_H
 
 #include <string>
-using namespace std;
 
-class NFA;
+using namespace std;
 
 /**
  * Converts an integer into a string.
@@ -24,11 +23,11 @@ NFA alternate(NFA n1, NFA n2);
 /**
  * Returns the (n)* nfa
  */
-NFA star(NFA n);
+NFA starTransform(NFA n);
 
 /**
  * Returns the (n)+ nfa
  */
-NFA plus(NFA n);
+NFA plusTransform(NFA n);
 
 #endif // NFA_H

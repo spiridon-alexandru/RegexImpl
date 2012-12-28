@@ -68,11 +68,11 @@ NFA alternate(NFA n1, NFA n2);
 /**
  * Returns the (n)* nfa
  */
- NFA starTransform(NFA n);
+NFA starTransform(NFA n);
 
- /**
+/**
  * Returns the (n)+ nfa
  */
- NFA plusTransform(NFA n);
+NFA plusTransform(NFA n);
 
 #endif // NFA_H

@@ -69,8 +69,8 @@ NFA alternate(NFA n1, NFA n2)
 /**
  * Returns the (n)* nfa
  */
- NFA star(NFA n)
- {
+NFA starTransform(NFA n)
+{
  	NFA ns(n.stateNumber + 2);
  	ns.startState = 1;
 
@@ -97,14 +97,35 @@ NFA alternate(NFA n1, NFA n2)
 	} 	
 
  	return ns;
- }
+}
 
- /**
+/**
  * Returns the (n)+ nfa
  */
- NFA plus(NFA n)
- {
- 	NFA np = NFA(3);
+NFA plusTransform(NFA n)
+{
+ 	int newStateNr = n.stateNumber + 1;
+ 	NFA np(newStateNr);
+ 	np.startState = 1;
+
+ 	np.finalStates.push_back(newStateNr);
+
+ 	// connect the final state to the start state
+ 	np.map[newStateNr][1] = eps;
+ 	// connect the previous final states to the new one
+ 	for (int i = 0; i < n.finalStates.size(); i++)
+ 	{
+ 		np.map[n.finalStates[i]][newStateNr] = eps;
+ 	}
+
+ 	// copy all the n transitions into ns
+	for (int i = 1; i < n.map.size(); i++)
+	{
+		for (int j = 1; j < n.map.size(); j++)
+		{
+			np.map[i][j] = n.map[i][j];
+		}
+	} 	
 
  	return np;
- }
+}
