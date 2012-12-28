@@ -36,6 +36,12 @@ set<int> testClosure(NFA nfa, int node);
 NFA testPlusTransformation();
 
 /**
+ * Creates a nfa from reges "(a|b)c*" and prints the result.
+ * @returns The resulting nfa.
+ */
+NFA testAlternation();
+
+/**
  * Simulates an input string over the nfa.
  * @param nfa The non-deterministic finite automata.
  * @param input The input string that needs to be simulated.
@@ -63,6 +69,7 @@ int main(int argc, char** argv)
 	test = "acd";
 	simulateNFA(starNFA, test);
 
+	// should fail
 	test = "ace";
 	simulateNFA(starNFA, test);
 
@@ -70,8 +77,22 @@ int main(int argc, char** argv)
 	test = "acd";
 	simulateNFA(plusNFA, test);
 
+	// should fail
 	test = "ac";
 	simulateNFA(plusNFA, test);
+
+	NFA alternateNFA = testAlternation();
+
+	// nfa simulation test on "a|b"
+	test = "a";
+	simulateNFA(alternateNFA, test);
+
+	test = "b";
+	simulateNFA(alternateNFA, test); 
+
+	// should fail
+	test = "c";
+	simulateNFA(alternateNFA, test); 
 
 	return 0;
 }
@@ -178,6 +199,21 @@ NFA testPlusTransformation()
 	return nfa6;
 }
 
+/**
+ * Creates a nfa from reges "(a|b)c*" and prints the result.
+ * @returns The resulting nfa.
+ */
+NFA testAlternation()
+{
+	NFA nfa1('a');
+	NFA nfa2('b');
+
+	NFA nfa3 = alternate(nfa1, nfa2);
+
+	nfa3.printNFA();
+
+	return nfa3;
+}
 
 /**
  * Simulates an input string over the nfa.

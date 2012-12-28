@@ -87,6 +87,14 @@ bool NFA::simulate(string input)
 	set<int> cs;
 	cs.insert(startState);
 
+	// add the closure of the start state
+	set<int> closure = epsClosure(startState);
+	std::set<int>::iterator closureIt;
+	for (closureIt=closure.begin(); closureIt!=closure.end(); ++closureIt)
+	{
+		cs.insert(*closureIt);
+	}
+
 	set<int> newStates;
 	std::set<int>::iterator it;
 
@@ -114,12 +122,9 @@ bool NFA::simulate(string input)
 					newStates.insert(i);
   					
   					// add the eps closure
-					set<int> closure = epsClosure(i);
-					std::set<int>::iterator closureIt;
+					closure = epsClosure(i);
 					for (closureIt=closure.begin(); closureIt!=closure.end(); ++closureIt)
 					{
-						// if the closure element isn't inside the current states
-						findIt=cs.find(*closureIt);
 						newStates.insert(*closureIt);
 					}
   				}
@@ -246,9 +251,46 @@ NFA concat(NFA n1, NFA n2)
  */
 NFA alternate(NFA n1, NFA n2)
 {
-	NFA ns = NFA(3);
+	NFA na = NFA(n1.stateNumber + n2.stateNumber + 2);
 
- 	return ns;
+	int finalState = n1.stateNumber + n2.stateNumber + 2;
+	na.startState = 1;
+	na.finalStates.push_back(finalState);
+
+	// connect the start state of the resulting nfa to the start states of the two nfas
+	na.map[na.startState][n1.startState + 1] = eps;
+	na.map[na.startState][n2.startState + n1.stateNumber + 1] = eps;
+
+	// add the transitions from n1
+	for (int i = 1; i <= n1.stateNumber; i++)
+	{
+		for (int j = 1; j <= n1.stateNumber; j++)
+		{
+			na.map[i + 1][j + 1] = n1.map[i][j];
+		}
+	}
+
+	// add the transitions from n2
+	for (int i = 1; i <= n2.stateNumber; i++)
+	{
+		for (int j = 1; j <= n2.stateNumber; j++)
+		{
+			na.map[i + n1.stateNumber + 1][j + n1.stateNumber + 1] = n2.map[i][j];
+		}
+	}
+
+	// connect the final states of the nfas n1 and n2 to the new final state
+	for (int i = 0; i < n1.finalStates.size(); i++)
+	{
+		na.map[n1.finalStates[i] + 1][finalState] = eps;
+	}
+
+	for (int i = 0; i < n2.finalStates.size(); i++)
+	{
+		na.map[n2.finalStates[i] + n1.stateNumber + 1][finalState] = eps;
+	}
+
+ 	return na;
 }
 
 /**
