@@ -3,126 +3,195 @@
 #include "nfa.h"
 using namespace std;
 
+/**
+ * Creates and prints two simple nfas
+ * @returns The resulting nfa. 
+ */
+NFA testCreation();
+
+/**
+ * Creates two nfas, concatenates them and prints the result
+ * @returns The resulting nfa. 
+ */
+NFA testConcatenation();
+
+/**
+ * Creates a nfa from regex "acd*" and prints the result.
+ * @returns The resulting nfa.
+ */
+NFA testStarTransformation();
+
+/**
+ * Creates a nfa from regex "acd*" and prints the closure of a node.
+ * @param nfa The nfa cotaining the node that needs closure calculation.
+ * @param node The node of which closure needs to be calculated.
+ * @returns The closure of the selected node in a stl set.
+ */
+set<int> testClosure(NFA nfa, int node);
+
+/**
+ * Creates a nfa from regex "acd+" and prints the result.
+ * @returns The resulting nfa.
+ */
+NFA testPlusTransformation();
+
+/**
+ * Simulates an input string over the nfa.
+ * @param nfa The non-deterministic finite automata.
+ * @param input The input string that needs to be simulated.
+ */
+void simulateNFA(NFA nfa, string input);
+
 int main(int argc, char** argv)
 {
-/*	NFA nfa(20);
+	NFA creationNFA = testCreation();
+	NFA concatenationNFA = testConcatenation();
 
-	nfa.printNFA(); */
+	NFA starNFA = testStarTransformation();
+	NFA plusNFA = testPlusTransformation();
 
+	testClosure(starNFA, 4);
+	testClosure(starNFA, 2);
+
+	// nfa simulation test on "acd*"
+	string test = "acdddd";
+	simulateNFA(starNFA, test);
+
+	test = "ac";
+	simulateNFA(starNFA, test);
+
+	test = "acd";
+	simulateNFA(starNFA, test);
+
+	test = "ace";
+	simulateNFA(starNFA, test);
+
+	// nfa simulation test on "acd+"
+	test = "acd";
+	simulateNFA(plusNFA, test);
+
+	test = "ac";
+	simulateNFA(plusNFA, test);
+
+	return 0;
+}
+
+/**
+ * Creates and prints two simple nfas
+ * @returns The resulting nfa. 
+ */
+NFA testCreation()
+{
 	// creating the regex acd*
+	NFA nfa1('a');
+
+	nfa1.printNFA();
+
+	return nfa1;
+}
+
+/**
+ * Creates two nfas, concatenates them and prints the result
+ * @returns The resulting nfa. 
+ */
+NFA testConcatenation()
+{
+	// concat test
 	NFA nfa1('a');
 	NFA nfa2('c');
 
-	// concat test
-//	nfa1.printNFA();
-//	nfa2.printNFA();
-
 	NFA nfa3 = concat(nfa1, nfa2);
 
-//	nfa3.printNFA();
+	nfa3.printNFA();
+
+	return nfa3;
+}
+
+/**
+ * Creates a nfa from regex "acd*" and prints the result.
+ * @returns The resulting nfa.
+ */
+NFA testStarTransformation()
+{
+	NFA nfa1('a');
+	NFA nfa2('c');
+
+	NFA nfa3 = concat(nfa1, nfa2);
 
 	// star test
 	NFA nfa4('d');
 	NFA nfa5 = starTransform(nfa4);
 
-//	nfa5.printNFA();
-
 	// final nfa acd*
 	NFA nfa6 = concat (nfa3, nfa5);
 
-//	nfa6.printNFA();
+	nfa6.printNFA();
+
+	return nfa6;
+}
+
+/**
+ * Creates a nfa from regex "acd*" and prints the closure of a node.
+ * @param nfa The nfa cotaining the node that needs closure calculation.
+ * @param node The node of which closure needs to be calculated.
+ * @returns The closure of the selected node in a stl set.
+ */
+set<int> testClosure(NFA nfa, int node)
+{
+	// invalid node
+	if (node > nfa.stateNumber || node < 1)
+		return set<int>();
 
 	// eps closure test
-/*	set<int> closure = nfa6.epsClosure(4);
-	cout << "Closure of node 4:\n";
+	set<int> closure = nfa.epsClosure(node);
+	cout << "Closure of node " << node << ":\n";
 	std::set<int>::iterator it;
 	for (it=closure.begin(); it!=closure.end(); ++it)
 	{
 		cout << *it << " ";
 	}
 	cout << "\n";
-	
-	closure = nfa6.epsClosure(2);
-	cout << "Closure of node 2:\n";
-	for (it=closure.begin(); it!=closure.end(); ++it)
-	{
-		cout << *it << " ";
-	}
-	cout << "\n"; */
 
-	// nfa simulation test
-/*	string test = "acdddd";
-	if (nfa6.simulate(test))
-	{
-		cout << "String \"" << test << "\" passed!\n";
-	}
-	else
-	{
-		cout << "String \"" << test << "\" failed!\n";
-	}
+	return closure;
+}
 
+/**
+ * Creates a nfa from regex "acd+" and prints the result.
+ * @returns The resulting nfa.
+ */
+NFA testPlusTransformation()
+{
+	NFA nfa1('a');
+	NFA nfa2('c');
 
-	test = "ac";
-	if (nfa6.simulate(test))
-	{
-		cout << "String \"" << test << "\" passed!\n";
-	}
-	else
-	{
-		cout << "String \"" << test << "\" failed!\n";
-	}
-
-	test = "acd";
-	if (nfa6.simulate(test))
-	{
-		cout << "String \"" << test << "\" passed!\n";
-	}
-	else
-	{
-		cout << "String \"" << test << "\" failed!\n";
-	}
-
-	test = "ace";
-	if (nfa6.simulate(test))
-	{
-		cout << "String \"" << test << "\" passed!\n";
-	}
-	else
-	{
-		cout << "String \"" << test << "\" failed!\n";
-	} */
+	NFA nfa3 = concat(nfa1, nfa2);
 
 	// plus test
-	NFA nfa7('d');
-	NFA nfa8 = plusTransform(nfa7);
-
-	//nfa8.printNFA();
+	NFA nfa4('d');
+	NFA nfa5 = plusTransform(nfa4);
 
 	// final nfa acd*
-	NFA nfa9 = concat (nfa3, nfa8);
+	NFA nfa6 = concat (nfa3, nfa5);
 
-	//nfa9.printNFA();
+	nfa6.printNFA();
 
-	// nfa simulation test
-	string test = "acd";
-	if (nfa9.simulate(test))
+	return nfa6;
+}
+
+
+/**
+ * Simulates an input string over the nfa.
+ * @param nfa The non-deterministic finite automata.
+ * @param input The input string that needs to be simulated.
+ */
+void simulateNFA(NFA nfa, string input)
+{
+	if (nfa.simulate(input))
 	{
-		cout << "String \"" << test << "\" passed!\n";
+		cout << "String \"" << input << "\" passed!\n";
 	}
 	else
 	{
-		cout << "String \"" << test << "\" failed!\n";
+		cout << "String \"" << input << "\" failed!\n";
 	}
-
-	test = "ac";
-	if (nfa9.simulate(test))
-	{
-		cout << "String \"" << test << "\" passed!\n";
-	}
-	else
-	{
-		cout << "String \"" << test << "\" failed!\n";
-	}
-
-	return 0;
 }
